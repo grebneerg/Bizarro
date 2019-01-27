@@ -1,0 +1,16 @@
+[package]
+name = "bizarro"
+version = "0.1.0"
+authors = ["Jack Greenberg <theProgrammerJack@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serenity = "0.5.11"
+markov = "1.0.2"
+clap = "2.32.0"
+typemap = "0.3.3"
+serde_json = "1.0.37"
+rand = "0.6.4"
+serde = "1.0.85"
+serde_derive = "1.0.85"
+toml = "0.4.10"
