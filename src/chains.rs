@@ -12,7 +12,7 @@ impl UserChains {
         let mut map = HashMap::new();
         let none: Option<UserId> = None;
         for member in guild
-            .members(Some(10), none)
+            .members(Some(10), none) // TODO: make maximum configurable
             .expect("Could not get guild members")
         {
             map.insert(member.user_id(), Chain::new());
@@ -52,7 +52,9 @@ impl UserChains {
         Self(map)
     }
 
-    // fn users(&self) -> Vec<UserId>
+    pub fn user_ids(&self) -> Vec<&UserId> {
+        self.0.keys().collect()
+    }
 
     pub fn make_message(&self, user: &UserId) -> Option<String> {
         if let Some(chain) = self.0.get(user) {
