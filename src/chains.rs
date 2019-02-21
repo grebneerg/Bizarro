@@ -76,7 +76,7 @@ impl UserChains {
         }
     }
 
-    pub fn save(&self, path: PathBuf) -> io::Result<()> {
+    pub fn save(&self, path: &PathBuf) -> io::Result<()> {
         if !path.is_dir() {
             Err(io::Error::new(
                 io::ErrorKind::NotFound,
@@ -93,7 +93,7 @@ impl UserChains {
         }
     }
 
-    pub fn load(path: PathBuf) -> io::Result<Self> {
+    pub fn load(path: &PathBuf) -> io::Result<Self> {
         if !path.is_dir() {
             Err(io::Error::new(
                 io::ErrorKind::NotFound,

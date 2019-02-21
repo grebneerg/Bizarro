@@ -1,7 +1,7 @@
 use rand::Rng;
-use serde_derive::Deserialize;
 use serde_json::json;
 use serenity::{
+    framework::StandardFramework,
     http,
     model::{channel::Message, gateway::Ready, id::ChannelId, webhook::Webhook},
     prelude::*,
@@ -15,11 +15,10 @@ use markov::Chain;
 mod chains;
 use chains::*;
 
-#[derive(Deserialize)]
-struct Config {
-    discord_token: String,
-    chain_storage_dir: String,
-}
+mod commands;
+mod config;
+
+use config::Config;
 
 fn webhook(cid: ChannelId, name: String) -> Result<Webhook, serenity::Error> {
     http::create_webhook(*cid.as_u64(), &json!({ "name": name }))
@@ -87,9 +86,17 @@ fn main() {
             .expect("Invalid Bizarro.toml");
 
     let mut client = Client::new(&config.discord_token, Handler).expect("Error creating client");
+    client.with_framework(
+        StandardFramework::new()
+            .configure(|c| c.prefix(&config.prefix))
+            .cmd("ping", commands::ping)
+            .cmd("say", commands::say)
+            .cmd("regen", commands::regenerate)
+            .cmd("save", commands::save),
+    );
 
     let chains =
-        UserChains::load(PathBuf::from(&config.chain_storage_dir)).expect("couldn't load chains");
+        UserChains::load(&config.chain_storage_dir).expect("couldn't load chains");
 
     let mut everyone_path = PathBuf::from(&config.chain_storage_dir);
     everyone_path.push("everyone.mkc");
@@ -99,6 +106,7 @@ fn main() {
         let mut data = client.data.lock();
         data.insert::<UserChains>(chains);
         data.insert::<EveryoneChain>(everychain);
+        data.insert::<Config>(config);
     }
 
     if let Err(why) = client.start() {

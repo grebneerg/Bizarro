@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 serenity = "0.5.11"
 markov = "1.0.2"
-clap = "2.32.0"
+structopt = "0.2.14"
 typemap = "0.3.3"
 serde_json = "1.0.37"
 rand = "0.6.4"
