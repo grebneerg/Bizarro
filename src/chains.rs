@@ -5,10 +5,12 @@ use serenity::model::id::{GuildId, UserId};
 use markov::{Chain, SizedChainStringIterator};
 use typemap::Key;
 
+use crate::config::GenerationParams;
+
 pub struct UserChains(HashMap<UserId, Chain<String>>);
 
 impl UserChains {
-    pub fn generate(guild: &GuildId) -> Self {
+    pub fn generate(guild: &GuildId, params: &GenerationParams) -> Self {
         let mut map = HashMap::new();
         let none: Option<UserId> = None;
         for member in guild
@@ -28,11 +30,17 @@ impl UserChains {
                 ));
             let mut last = messages.last().cloned();
 
-            messages.iter().for_each(|m| {
-                if let Some(chain) = map.get_mut(&m.author.id) {
-                    chain.feed_str(m.content.as_ref());
-                }
-            });
+            messages
+                .iter()
+                .filter(|m| {
+                    let l = m.content.split_whitespace().collect::<Vec<_>>().len();
+                    l >= params.min_words && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
+                })
+                .for_each(|m| {
+                    if let Some(chain) = map.get_mut(&m.author.id) {
+                        chain.feed_str(m.content.as_ref());
+                    }
+                });
 
             while let Some(last_message) = last {
                 let messages = channel
@@ -41,11 +49,17 @@ impl UserChains {
                     .expect("could not get messages");
                 last = messages.last().cloned();
 
-                messages.iter().for_each(|m| {
-                    if let Some(chain) = map.get_mut(&m.author.id) {
-                        chain.feed_str(m.content.as_ref());
-                    }
-                });
+                messages
+                    .iter()
+                    .filter(|m| {
+                        let l = m.content.split_whitespace().collect::<Vec<_>>().len();
+                        l >= params.min_words && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
+                    })
+                    .for_each(|m| {
+                        if let Some(chain) = map.get_mut(&m.author.id) {
+                            chain.feed_str(m.content.as_ref());
+                        }
+                    });
             }
         }
 

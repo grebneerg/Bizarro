@@ -45,9 +45,22 @@ impl EventHandler for Handler {
                 .feed(&author_id, &msg.content);
             if let Some(guild_id) = msg.guild_id {
                 if msg.mentions.len() > 0 || msg.mention_roles.len() > 0 || msg.mention_everyone {
-                    let mentions: Vec<_> = ctx.data.lock().get::<UserChains>().expect("No chains loaded").user_ids().iter().map(|id| id.to_user().expect("couldn't retrieve user")).filter(|user| {
-                        msg.mentions.contains(&user) || msg.mention_roles.iter().any(|role| user.has_role(guild_id, role))
-                    }).collect();
+                    let mentions: Vec<_> = ctx
+                        .data
+                        .lock()
+                        .get::<UserChains>()
+                        .expect("No chains loaded")
+                        .user_ids()
+                        .iter()
+                        .map(|id| id.to_user().expect("couldn't retrieve user"))
+                        .filter(|user| {
+                            msg.mentions.contains(&user)
+                                || msg
+                                    .mention_roles
+                                    .iter()
+                                    .any(|role| user.has_role(guild_id, role))
+                        })
+                        .collect();
 
                     let hook = webhook(msg.channel_id, "wide hook".to_owned())
                         .expect("could not make webhook");
@@ -97,13 +110,11 @@ fn main() {
         StandardFramework::new()
             .configure(|c| c.prefix(&config.prefix))
             .cmd("ping", commands::ping)
-            .cmd("say", commands::say)
             .cmd("regen", commands::regenerate)
             .cmd("save", commands::save),
     );
 
-    let chains =
-        UserChains::load(&config.chain_storage_dir).expect("couldn't load chains");
+    let chains = UserChains::load(&config.chain_storage_dir).expect("couldn't load chains");
 
     let mut everyone_path = PathBuf::from(&config.chain_storage_dir);
     everyone_path.push("everyone.mkc");

@@ -1,4 +1,4 @@
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 use serde_derive::Deserialize;
 use typemap::Key;
@@ -12,7 +12,7 @@ pub struct Config {
     pub prefix: String,
 
     #[serde(default)]
-    pub generation: GenerationParams
+    pub generation: GenerationParams,
 }
 
 impl Key for Config {
@@ -21,7 +21,10 @@ impl Key for Config {
 
 #[derive(Deserialize)]
 pub struct GenerationParams {
+    #[serde(default)]
     pub min_words: usize,
+
+    #[serde(default)]
     pub include_tag_only: bool,
 }
 

@@ -1,20 +1,19 @@
 use std::{path::PathBuf, str::FromStr};
 
-use serenity::command;
 use crate::chains::UserChains;
 use crate::config::Config;
+use serenity::command;
 
 command!(ping(ctx, msg) {
     msg.channel_id.say("pong")?;
 });
 
-command!(say(ctx, msg) {
-    msg.channel_id.say(format!("msg: {}", msg.content))?;
-});
-
 command!(regenerate(ctx, msg) {
     let mut status = msg.channel_id.say("Beginning generation...")?;
-    let new_chains = UserChains::generate(&msg.guild_id.expect("No guild id"));
+    let new_chains = UserChains::generate(
+        &msg.guild_id.expect("No guild id"),
+        &ctx.data.lock().get::<Config>().expect("No configuration loaded").generation
+    );
     status.edit(|m| m.content("Generation completed. Loading new chains..."))?;
     ctx.data.lock().insert::<UserChains>(new_chains);
     status.edit(|m| m.content("New chains loaded"))?;
