@@ -82,16 +82,6 @@ impl EventHandler for Handler {
                             });
                         }
                     }
-                    if msg.mention_everyone {
-                        ctx.data
-                            .lock()
-                            .get::<EveryoneChain>()
-                            .unwrap()
-                            .str_iter_for(rng.gen_range(1, 5))
-                            .for_each(|m| {
-                                hook.execute(false, |w| w.username("Everyone").content(&m));
-                            });
-                    }
 
                     hook.delete();
                 }
@@ -116,14 +106,9 @@ fn main() {
 
     let chains = UserChains::load(&config.chain_storage_dir).expect("couldn't load chains");
 
-    let mut everyone_path = PathBuf::from(&config.chain_storage_dir);
-    everyone_path.push("everyone.mkc");
-    let everychain = Chain::load(everyone_path).expect("Could not load everyone chain");
-
     {
         let mut data = client.data.lock();
         data.insert::<UserChains>(chains);
-        data.insert::<EveryoneChain>(everychain);
         data.insert::<Config>(config);
     }
 
