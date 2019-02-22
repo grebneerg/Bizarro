@@ -69,18 +69,18 @@ impl EventHandler for Handler {
                     for user in mentions {
                         let name = user.nick_in(gid).unwrap_or(user.name.clone());
                         let a_url = user.avatar_url().unwrap_or("https://crates.io/assets/Cargo-Logo-Small-c39abeb466d747f3be442698662c5260.png".to_string());
-                        for _ in 0..rng.gen_range(1, 5) {
-                            let res = ctx
-                                .data
-                                .lock()
-                                .get::<UserChains>()
-                                .unwrap()
-                                .make_message(&user.id)
+                        ctx.data
+                            .lock()
+                            .get::<UserChains>()
+                            .unwrap()
+                            .message_iter(&user.id, rng.gen_range(1, 5))
+                            .unwrap()
+                            .for_each(|res| {
+                                hook.execute(false, |w| {
+                                    w.username(&name).avatar_url(&a_url).content(&res)
+                                })
                                 .unwrap();
-                            hook.execute(false, |w| {
-                                w.username(&name).avatar_url(&a_url).content(&res)
                             });
-                        }
                     }
 
                     hook.delete();

@@ -34,7 +34,8 @@ impl UserChains {
                 .iter()
                 .filter(|m| {
                     let l = m.content.split_whitespace().collect::<Vec<_>>().len();
-                    l >= params.min_words && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
+                    l >= params.min_words
+                        && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
                 })
                 .for_each(|m| {
                     if let Some(chain) = map.get_mut(&m.author.id) {
@@ -53,7 +54,8 @@ impl UserChains {
                     .iter()
                     .filter(|m| {
                         let l = m.content.split_whitespace().collect::<Vec<_>>().len();
-                        l >= params.min_words && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
+                        l >= params.min_words
+                            && !(params.include_tag_only && l == 1 && m.content.starts_with("<@!"))
                     })
                     .for_each(|m| {
                         if let Some(chain) = map.get_mut(&m.author.id) {
