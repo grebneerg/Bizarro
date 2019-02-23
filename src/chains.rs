@@ -7,9 +7,11 @@ use typemap::Key;
 
 use crate::config::GenerationParams;
 
+/// A struct containing the markov chains for each user.
 pub struct UserChains(HashMap<UserId, Chain<String>>);
 
 impl UserChains {
+    /// Generates markov chains for a given guild using the provided parameters.
     pub fn generate(guild: &GuildId, params: &GenerationParams) -> Self {
         let mut map = HashMap::new();
         let none: Option<UserId> = None;
@@ -68,10 +70,12 @@ impl UserChains {
         Self(map)
     }
 
+    /// Returns a `Vec<&UserId>` of all the users that have chains.
     pub fn user_ids(&self) -> Vec<&UserId> {
         self.0.keys().collect()
     }
 
+    /// Creates a message from the `user`s chain, returning none if the user does not have one.
     pub fn make_message(&self, user: &UserId) -> Option<String> {
         if let Some(chain) = self.0.get(user) {
             Some(chain.generate_str())
@@ -80,6 +84,7 @@ impl UserChains {
         }
     }
 
+    /// Returns an `Iterator` over `length` messages generated from the `user`s chain, if there is one.
     pub fn message_iter(&self, user: &UserId, length: usize) -> Option<SizedChainStringIterator> {
         if let Some(chain) = self.0.get(user) {
             Some(chain.str_iter_for(length))
@@ -88,12 +93,14 @@ impl UserChains {
         }
     }
 
+    /// Adds a message to the `user`s chain.
     pub fn feed(&mut self, user: &UserId, string: &str) {
         if let Some(chain) = self.0.get_mut(user) {
             chain.feed_str(string);
         }
     }
 
+    /// Saves all of the chains to the directory specified by `path`.
     pub fn save(&self, path: &PathBuf) -> io::Result<()> {
         if !path.is_dir() {
             Err(io::Error::new(
@@ -111,6 +118,7 @@ impl UserChains {
         }
     }
 
+    /// Loads all of the chains from the directory specified by `path`.
     pub fn load(path: &PathBuf) -> io::Result<Self> {
         if !path.is_dir() {
             Err(io::Error::new(
@@ -134,6 +142,7 @@ impl UserChains {
         }
     }
 
+    /// Returns the number of users that have chains.
     pub fn count_users(&self) -> usize {
         self.0.keys().count()
     }

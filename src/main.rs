@@ -20,8 +20,11 @@ mod config;
 
 use config::Config;
 
-use fern::{self, colors::{Color, ColoredLevelConfig}};
-use log::{self, trace, debug, info, warn, error};
+use fern::{
+    self,
+    colors::{Color, ColoredLevelConfig},
+};
+use log::{self, debug, error, info, trace, warn};
 
 use chrono;
 
@@ -69,7 +72,11 @@ impl EventHandler for Handler {
                 .unwrap()
                 .feed(&author_id, &msg.content);
             if let Some(guild_id) = msg.guild_id {
-                trace!("Recieved message in guild {} from author {}", guild_id, author_id);
+                trace!(
+                    "Recieved message in guild {} from author {}",
+                    guild_id,
+                    author_id
+                );
                 if msg.mentions.len() > 0 || msg.mention_roles.len() > 0 {
                     let mentions: Vec<_> = ctx
                         .data
@@ -87,7 +94,7 @@ impl EventHandler for Handler {
                                     .any(|role| user.has_role(guild_id, role))
                         })
                         .collect();
-                    
+
                     trace!("Message contains {} unique mentions", mentions.len());
 
                     if let Ok(hook) = webhook(msg.channel_id, "wide hook".to_owned()) {
@@ -108,7 +115,10 @@ impl EventHandler for Handler {
                                     if let Err(why) = hook.execute(false, |w| {
                                         w.username(&name).avatar_url(&a_url).content(&res)
                                     }) {
-                                        warn!("Could not send message \"{}: {}\" -- {}", &name, &res, why);
+                                        warn!(
+                                            "Could not send message \"{}: {}\" -- {}",
+                                            &name, &res, why
+                                        );
                                     }
                                 });
                         }
@@ -138,7 +148,7 @@ fn main() {
         Err(why) => {
             error!("Error creating client: {}", why);
             std::process::exit(69); // Service unavailable exit code.
-        },
+        }
     };
 
     client.with_framework(
