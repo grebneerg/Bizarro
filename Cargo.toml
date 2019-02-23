@@ -14,3 +14,6 @@ rand = "0.6.4"
 serde = "1.0.85"
 serde_derive = "1.0.85"
 toml = "0.4.10"
+log = "0.4"
+fern = { version = "0.5", features = ["colored"] }
+chrono = "0.4.6"

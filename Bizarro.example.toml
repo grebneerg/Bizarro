@@ -1,6 +1,8 @@
 discord_token = "your discord bot token" # Required
 chain_storage_dir = "/the/directory/where/chains/shoul/be/stored" # Required
 
+prefix = "_" # Optional prefix for calling commands in discord. Defaults to "|".
+
 # Settings specific to generating the markov chains. This whole section can be omitted, meaning defaults will be used.
 [generation]
 min_words = 2 # The minimum length of a message in order to be included in markov chain generation. Defaults to 1.
