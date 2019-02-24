@@ -7,8 +7,8 @@ use serenity::{
     prelude::*,
 };
 
-use std::fs;
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
+use log::{debug, error, info, trace, warn};
 
 use markov::Chain;
 
@@ -19,34 +19,6 @@ mod commands;
 mod config;
 
 use config::Config;
-
-use fern::{
-    self,
-    colors::{Color, ColoredLevelConfig},
-};
-use log::{self, debug, error, info, trace, warn};
-
-use chrono;
-
-fn setup_logger() -> Result<(), fern::InitError> {
-    fern::Dispatch::new()
-        .format(move |out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        })
-        .level(log::LevelFilter::Debug)
-        .level_for("hyper", log::LevelFilter::Warn)
-        .level_for("serenity", log::LevelFilter::Warn)
-        .chain(std::io::stdout())
-        .chain(fern::log_file("bizarro.log")?)
-        .apply()?;
-    Ok(())
-}
 
 fn webhook(cid: ChannelId, name: String) -> Result<Webhook, serenity::Error> {
     http::create_webhook(*cid.as_u64(), &json!({ "name": name }))
@@ -136,7 +108,7 @@ impl EventHandler for Handler {
 }
 
 fn main() {
-    setup_logger();
+    config::setup_logger();
 
     let config: Config =
         toml::from_str(&fs::read_to_string("Bizarro.toml").expect("Didn't find Bizarro.toml"))

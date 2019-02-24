@@ -14,9 +14,9 @@ impl UserChains {
     /// Generates markov chains for a given guild using the provided parameters.
     pub fn generate(guild: &GuildId, params: &GenerationParams) -> Self {
         let mut map = HashMap::new();
-        let none: Option<UserId> = None;
+        let none_id: Option<UserId> = None;
         for member in guild
-            .members(Some(10), none) // TODO: make maximum configurable
+            .members(Some(1000), none_id)
             .expect("Could not get guild members")
         {
             map.insert(member.user_id(), Chain::new());
