@@ -1,5 +1,5 @@
 discord_token = "your discord bot token" # Required
-chain_storage_dir = "/the/directory/where/chains/shoul/be/stored" # Required
+chain_storage_dir = "/the/directory/where/chains/should/be/stored" # Required
 
 prefix = "_" # Optional prefix for calling commands in discord. Defaults to "|".
 

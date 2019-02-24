@@ -4,7 +4,6 @@ use serde_derive::Deserialize;
 use typemap::Key;
 
 use fern::colors::{Color, ColoredLevelConfig};
-use log::{debug, error, info, trace, warn};
 
 use chrono;
 
