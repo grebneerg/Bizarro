@@ -1,4 +1,5 @@
 # Bizarro
+[![Build Status](https://travis-ci.org/theProgrammerJack/Bizarro.svg?branch=master)](https://travis-ci.org/theProgrammerJack/Bizarro)
 
 A discord bot that mimics users using markov chains.
 
