@@ -60,9 +60,10 @@ pub fn setup_logger() -> Result<(), fern::InitError> {
                 message
             ))
         })
-        .level(log::LevelFilter::Debug)
+        .level(log::LevelFilter::Warn)
         .level_for("hyper", log::LevelFilter::Warn)
         .level_for("serenity", log::LevelFilter::Warn)
+        .level_for("rustls", log::LevelFilter::Warn)
         .chain(
             fern::Dispatch::new()
                 .format(move |out, message, record| {

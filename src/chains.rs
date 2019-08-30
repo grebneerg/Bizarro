@@ -1,6 +1,7 @@
 use std::{collections::HashMap, io, path::PathBuf, str::FromStr};
 
 use serenity::model::id::{GuildId, UserId};
+use serenity::prelude::*;
 
 use markov::{Chain, SizedChainStringIterator};
 use typemap::Key;
@@ -12,24 +13,21 @@ pub struct UserChains(HashMap<UserId, Chain<String>>);
 
 impl UserChains {
     /// Generates markov chains for a given guild using the provided parameters.
-    pub fn generate(guild: &GuildId, params: &GenerationParams) -> Self {
+    pub fn generate(ctx: &Context, guild: &GuildId, params: &GenerationParams) -> Self {
         let mut map = HashMap::new();
         let none_id: Option<UserId> = None;
         for member in guild
-            .members(Some(1000), none_id)
+            .members(ctx, Some(1000), none_id)
             .expect("Could not get guild members")
         {
             map.insert(member.user_id(), Chain::new());
         }
 
-        for channel in guild.channels().unwrap() {
-            let messages = channel
-                .0
-                .messages(|g| g.most_recent().limit(100))
-                .expect(&format!(
-                    "Could not retrieve messages from {}",
-                    channel.0.as_u64()
-                ));
+        for channel in guild.channels(ctx).unwrap() {
+            let messages = channel.0.messages(ctx, |g| g.limit(100)).expect(&format!(
+                "Could not retrieve messages from {}",
+                channel.0.as_u64()
+            ));
             let mut last = messages.last().cloned();
 
             messages
@@ -48,7 +46,7 @@ impl UserChains {
             while let Some(last_message) = last {
                 let messages = channel
                     .0
-                    .messages(|g| g.before(last_message).limit(100))
+                    .messages(ctx, |g| g.before(last_message).limit(100))
                     .expect("could not get messages");
                 last = messages.last().cloned();
 

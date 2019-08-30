@@ -5,7 +5,7 @@ authors = ["Jack Greenberg <theProgrammerJack@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-serenity = "0.5.11"
+serenity = "0.6"
 markov = "1.0.2"
 structopt = "0.2.14"
 typemap = "0.3.3"
